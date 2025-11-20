@@ -22,7 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@Order(-2)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
         public GlobalExceptionHandler(ErrorAttributes errorAttributes,
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
         private Mono<ServerResponse> renderErrorResponse(ServerRequest req) {
             Throwable error = getError(req);
-            log.error(">>> GlobalExceptionHandler error type: " + error.getClass().getName());
+            log.error(">>> GlobalExceptionHandler error type: " + error.getMessage());
 
             if (error instanceof ValidationException ve) {
 
@@ -54,7 +54,6 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
                         .body(BodyInserters.fromValue(body));
             }
 
-            // ✅ 2. Resto de errores: tu lógica actual
             Map<String, Object> generalError = getErrorAttributes(req, ErrorAttributeOptions.defaults());
             Map<String, Object> customError = new HashMap<>();
 

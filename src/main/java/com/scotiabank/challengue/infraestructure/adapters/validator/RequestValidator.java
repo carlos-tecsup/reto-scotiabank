@@ -21,7 +21,7 @@ public class RequestValidator {
         if (t == null) {
             List<Map<String, String>> errors = List.of(
                     Map.of(
-                            "field", "",
+                            "field", "requestBody",
                             "message", "Request body no puede ser nulo"
                     )
             );
@@ -35,9 +35,9 @@ public class RequestValidator {
         }
 
         List<Map<String, String>> errors = constraints.stream()
-                .map(cv -> Map.of(
-                        "field", cv.getPropertyPath().toString(),
-                        "message", cv.getMessage()
+                .map(constraintViolation -> Map.of(
+                        "field", constraintViolation.getPropertyPath().toString(),
+                        "message", constraintViolation.getMessage()
                 ))
                 .toList();
 

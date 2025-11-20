@@ -4,7 +4,6 @@ import com.scotiabank.challengue.application.dto.StudentDTO;
 import com.scotiabank.challengue.domain.ports.input.StudentUseCase;
 import com.scotiabank.challengue.infraestructure.adapters.validator.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -35,18 +34,6 @@ public class StudentHandler {
                                         ServerResponse.created(URI.create("/api/students/" + dto.getId()))
                                                 .build()
                                 )
-                )
-                .onErrorResume(e -> {
-                    log.error("Error registering student , {}", e.getMessage());
-                    return ServerResponse.badRequest()
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .bodyValue(errorPayload(e.getMessage()));
-                });
-    }
-
-    private record ErrorResponse(String code, String message) {}
-
-    private ErrorResponse errorPayload(String message) {
-        return new ErrorResponse("registration_error", message);
+                );
     }
 }
