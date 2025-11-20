@@ -1,4 +1,4 @@
 package domain.model;
 
-public record StudentModel(Long id, String name, String lastName, boolean status, int age) {
+public record StudentModel(Long id, String name, String lastName, String status, int age) {
 }

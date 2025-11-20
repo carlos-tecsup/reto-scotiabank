@@ -1,21 +1,21 @@
 package com.scotiabank.challengue.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
-@Builder
 @Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentDTO implements Serializable {
+public class StudentDTO  {
+
     @NotNull(message = "ID no debe ser nulo")
     @Min(value = 1, message = "ID debe ser mayor o igual que 1")
     private Long id;
@@ -28,11 +28,18 @@ public class StudentDTO implements Serializable {
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Apellido debe contener solo letras")
     private String lastName;
 
+    @Getter
     @NotNull(message = "Estado no puede estar en blanco o nulo")
     @Pattern(regexp = "^([01])$", message = "Estado debe ser [1]'Activo' o [0]'Inactivo'")
-    private String status;
+    @JsonProperty("isActive")   // JSON se mantiene igual
+    private boolean active;
 
     @NotNull(message = "Edad no puede ser nula")
     @Min(value = 1, message = "Edad debe ser mayor que 1")
     private Integer age;
+
+    public void setIsActive(boolean active) {
+        this.active = active;
+    }
+
 }
