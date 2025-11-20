@@ -1,4 +1,4 @@
-package com.scotiabank.challengue.infraestructure.output.persistence.adapters.input.config;
+package com.scotiabank.challengue.infraestructure.config;
 
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.context.annotation.Bean;

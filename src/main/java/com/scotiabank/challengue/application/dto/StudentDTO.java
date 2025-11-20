@@ -28,18 +28,16 @@ public class StudentDTO  {
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Apellido debe contener solo letras")
     private String lastName;
 
-    @Getter
+    @Pattern(
+            regexp = "^(activo|inactivo)$",
+            message = "Estado debe ser 'activo' o 'inactivo'"
+    )
     @NotNull(message = "Estado no puede estar en blanco o nulo")
-    @Pattern(regexp = "^([01])$", message = "Estado debe ser [1]'Activo' o [0]'Inactivo'")
-    @JsonProperty("isActive")   // JSON se mantiene igual
-    private boolean active;
+    private String status;
 
     @NotNull(message = "Edad no puede ser nula")
     @Min(value = 1, message = "Edad debe ser mayor que 1")
     private Integer age;
 
-    public void setIsActive(boolean active) {
-        this.active = active;
-    }
 
 }

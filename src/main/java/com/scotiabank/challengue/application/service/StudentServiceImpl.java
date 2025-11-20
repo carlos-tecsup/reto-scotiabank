@@ -2,10 +2,10 @@ package com.scotiabank.challengue.application.service;
 
 import com.scotiabank.challengue.application.dto.StudentDTO;
 import com.scotiabank.challengue.application.mapper.StudentMapper;
-import domain.exceptions.DuplicatedStudentException;
-import domain.model.StudentModel;
-import domain.ports.input.StudentUseCase;
-import domain.ports.output.StudentRepositoryPort;
+import com.scotiabank.challengue.domain.exceptions.DuplicatedStudentException;
+import com.scotiabank.challengue.domain.model.StudentModel;
+import com.scotiabank.challengue.domain.ports.input.StudentUseCase;
+import com.scotiabank.challengue.domain.ports.output.StudentRepositoryPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -24,20 +24,18 @@ public class StudentServiceImpl implements StudentUseCase {
     @Override
     public Mono<Void> createStudent(StudentDTO studentDTO) {
         log.info("Executing registerStudent with ID: {}", studentDTO.getId());
+        return Mono.defer(() -> {
+                    log.info("Executing registerStudent with ID: {}", studentDTO.getId());
+                    StudentModel studentModel = studentMapper.fromDTO(studentDTO);
 
-        return Mono.fromCallable(() -> studentMapper.fromDTO(studentDTO))
-                .flatMap(student -> studentRepositoryPort.existsById(student.id())
-                        .flatMap(exists -> {
-                            if (exists) {
-                                log.error("Student with ID {} already exists", student.id());
-                                return Mono.error(new DuplicatedStudentException(student.id()));
-                            }
-                            return studentRepositoryPort.save(student)
-                                    .doOnSuccess(unused ->
-                                            log.info("Student with ID {} registered successfully", student.id())
-                                    )
-                                    .doOnError(e -> log.error("Error in registerStudent {}", studentDTO.getName()));
-                        }));
+                    return studentRepositoryPort.existsById(studentModel.id())
+                            .flatMap(exists -> exists
+                                    ? Mono.error(new DuplicatedStudentException(studentModel.id()))
+                                    : studentRepositoryPort.save(studentModel));
+                })
+                .doOnSuccess(v -> log.info("StudentServiceImpl registered successfully with ID: {}", studentDTO.getId()))
+                .doOnError(e -> log.error("Error in registerStudent for ID: {}", studentDTO.getId(), e))
+                .contextWrite(ctx -> ctx.put("studentId", studentDTO.getId()));
     }
 
 

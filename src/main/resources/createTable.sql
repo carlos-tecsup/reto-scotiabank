@@ -1,8 +1,8 @@
 CREATE TABLE students (
-                       id BIGINT IDENTITY PRIMARY KEY,
+                       id BIGINT PRIMARY KEY,
                        name VARCHAR(50) NOT NULL,
                        lastname VARCHAR(50) NOT NULL,
-                       status BOOLEAN NOT NULL,
-                       age int NOT NULL,
+                       status VARCHAR(20) NOT NULL,
+                       age int NOT NULL
 );
 

@@ -1,8 +1,8 @@
 INSERT INTO students (name, lastname, status, age)
-VALUES ('Juan', 'PEREZ', TRUE, 26);
+VALUES ('Juan', 'PEREZ', 'ACTIVO', 26);
 
 INSERT INTO students (name, lastname, status, age)
-VALUES ('Daniel', 'Lazo', FALSE, 23);
+VALUES ('Daniel', 'Lazo', 'ACTIVO', 23);
 
 INSERT INTO students (name, lastname, status, age)
-VALUES ('Miguel', 'Carranza', TRUE, 21);
+VALUES ('Miguel', 'Carranza', 'ACTIVO', 21);
