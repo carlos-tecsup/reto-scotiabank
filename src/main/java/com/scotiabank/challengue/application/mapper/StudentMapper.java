@@ -14,9 +14,15 @@ public interface StudentMapper {
 
 
     // DOMAIN → DTO
+    @Mapping(target = "isActive", expression = "java(\"activo\".equalsIgnoreCase(model.status()))")
     StudentDTO toDTO(StudentModel model);
 
+    @Mapping(target = "status", expression = "java(dto.getIsActive() != null && dto.getIsActive() ? \"activo\" : \"inactivo\")")
     StudentModel fromDTO(StudentDTO dto);
+    
+    default String mapIsActiveToStatus(Boolean isActive) {
+        return (isActive == null || isActive) ? "activo" : "inactivo";
+    }
 
 
     // DOMAIN → ENTITY

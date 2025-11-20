@@ -9,8 +9,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
-
 
 @Slf4j
 @Component
@@ -30,10 +28,7 @@ public class StudentHandler {
                 .flatMap(dto ->
                         studentUseCase.createStudent(dto)
                                 .doOnSuccess(v -> log.info("StudentHandler Student registered successfully with ID: {}", dto.getId()))
-                                .then(
-                                        ServerResponse.created(URI.create("/api/students/" + dto.getId()))
-                                                .build()
-                                )
+                                .then(ServerResponse.noContent().build())
                 );
     }
 }
