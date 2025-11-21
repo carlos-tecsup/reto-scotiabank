@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 @Component
 @Slf4j
 public class StudentRepositoryAdapter implements StudentRepositoryPort {
@@ -43,9 +45,11 @@ public class StudentRepositoryAdapter implements StudentRepositoryPort {
     }
 
     @Override
-    public Flux<StudentModel> findAllStudents() {
-        return studentRepository.findAll()
-                .map(studentMapper::toDomain);
+    public Flux<StudentModel> searchStudents(String status) {
+        Flux<StudentEntity> query = (Objects.isNull(status)) ? studentRepository.findAll()
+                                                             : studentRepository.findByStatus(status);
+                
+        return query.map(studentMapper::toDomain);
     }
 
     @Override

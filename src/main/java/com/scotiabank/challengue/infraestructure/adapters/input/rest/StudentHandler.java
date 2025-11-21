@@ -1,6 +1,7 @@
 package com.scotiabank.challengue.infraestructure.adapters.input.rest;
 
-import com.scotiabank.challengue.application.dto.StudentDTO;
+import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
+import com.scotiabank.challengue.application.dto.SearchStudentsRequestDTO;
 import com.scotiabank.challengue.domain.ports.input.StudentUseCase;
 import com.scotiabank.challengue.infraestructure.adapters.validator.RequestValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class StudentHandler {
 
 
     public Mono<ServerResponse> registerStudent(ServerRequest request) {
-        return request.bodyToMono(StudentDTO.class)
+        return request.bodyToMono(CreateStudentRequestDTO.class)
                 .flatMap(requestValidator:: validate)
                 .flatMap(dto ->
                         studentUseCase.createStudent(dto)
@@ -31,4 +32,16 @@ public class StudentHandler {
                                 .then(ServerResponse.noContent().build())
                 );
     }
+
+    public Mono<ServerResponse> searchStudents(ServerRequest request) {
+        return request.bodyToMono(SearchStudentsRequestDTO.class)
+                .defaultIfEmpty(SearchStudentsRequestDTO.builder().build())
+                .flatMap(searchRequest -> {
+                    log.info("Searching students with request: {}", searchRequest);
+                    
+                    return studentUseCase.searchStudents(searchRequest)
+                            .flatMap(response -> ServerResponse.ok().bodyValue(response));
+                });
+    }
+
 }

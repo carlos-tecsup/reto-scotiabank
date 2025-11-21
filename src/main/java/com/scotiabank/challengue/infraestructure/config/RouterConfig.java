@@ -17,12 +17,12 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @Slf4j
 public class RouterConfig {
 
-
     @Bean
     public RouterFunction<ServerResponse> studentRoutes(StudentHandler handler) {
         return RouterFunctions.route()
                 .nest(path(PATH_BASE), builder -> builder
-                        .POST("/create", accept(MediaType.APPLICATION_JSON), handler::registerStudent))
+                        .POST("/create", accept(MediaType.APPLICATION_JSON), handler::registerStudent)
+                        .GET("/search", accept(MediaType.APPLICATION_JSON), handler::searchStudents))
                 .build();
     }
 

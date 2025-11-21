@@ -6,13 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentDTO  {
+public class BaseStudentDTO {
 
     @NotNull(message = "ID no debe ser nulo")
     @Min(value = 1, message = "ID debe ser mayor o igual que 1")
@@ -26,11 +24,9 @@ public class StudentDTO  {
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Apellido debe contener solo letras")
     private String lastName;
 
-    private Boolean isActive;
+    private String status;
 
     @NotNull(message = "Edad no puede ser nula")
     @Min(value = 1, message = "Edad debe ser mayor que 1")
     private Integer age;
-
-
 }

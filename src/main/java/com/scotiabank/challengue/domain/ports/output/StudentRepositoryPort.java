@@ -6,6 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface StudentRepositoryPort {
     Mono<Void> save(StudentModel studentModel);
-    Flux<StudentModel> findAllStudents();
+    Flux<StudentModel> searchStudents(String status);
     Mono<Boolean> existsById(Long id);
 }
