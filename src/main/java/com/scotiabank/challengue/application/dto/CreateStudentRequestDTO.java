@@ -1,11 +1,13 @@
 package com.scotiabank.challengue.application.dto;
 
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Data
-@EqualsAndHashCode(callSuper=false)
+@SuperBuilder
+@Getter
+@Setter
 public class CreateStudentRequestDTO extends BaseStudentDTO{
     private Boolean isActive;
 }
