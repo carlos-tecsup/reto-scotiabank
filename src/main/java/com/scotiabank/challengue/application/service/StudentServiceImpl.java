@@ -3,6 +3,7 @@ package com.scotiabank.challengue.application.service;
 import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
 import com.scotiabank.challengue.application.dto.SearchStudentsRequestDTO;
 import com.scotiabank.challengue.application.dto.SearchStudentResponseDTO;
+import com.scotiabank.challengue.application.enums.StatusEnum;
 import com.scotiabank.challengue.application.mapper.StudentMapper;
 import com.scotiabank.challengue.domain.exceptions.DuplicatedStudentException;
 import com.scotiabank.challengue.domain.model.StudentModel;
@@ -14,8 +15,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 
-import static com.scotiabank.challengue.application.constants.Constants.STATUS_ACTIVE;
-import static com.scotiabank.challengue.application.constants.Constants.STATUS_INACTIVE;
+import static com.scotiabank.challengue.application.constants.Constants.STUDENT_FOUND_MESSAGE;
+
 
 @Service
 @Slf4j
@@ -36,7 +37,7 @@ public class StudentServiceImpl implements StudentUseCase {
 
                     return studentRepositoryPort.existsById(studentModel.id())
                             .flatMap(exists -> exists
-                                    ? Mono.error(new DuplicatedStudentException(studentModel.id()))
+                                    ? Mono.error(new DuplicatedStudentException(String.format(STUDENT_FOUND_MESSAGE, createStudentRequestDTO.getId())))
                                     : studentRepositoryPort.save(studentModel));
                 })
                 .doOnSuccess(v -> log.info("StudentServiceImpl registered successfully with ID: {}", createStudentRequestDTO.getId()))
@@ -50,7 +51,7 @@ public class StudentServiceImpl implements StudentUseCase {
         
         String status = null;
         if (Objects.nonNull(searchRequest.getIsActive())) {
-            status = searchRequest.getIsActive() ? STATUS_ACTIVE : STATUS_INACTIVE;
+            status = searchRequest.getIsActive() ? StatusEnum.ACTIVE.getDesc() : StatusEnum.INACTIVE.getDesc();
         }
         
         return studentRepositoryPort.searchStudents(status)

@@ -12,8 +12,8 @@ import java.util.Map;
 @ToString
 @AllArgsConstructor
 public enum StatusEnum {
-    ACTIVE("1","Active"),
-    INACTIVE("0","Inactive");
+    ACTIVE("1","activo"),
+    INACTIVE("0","inactivo");
 
     private final String cod;
     private final String desc;

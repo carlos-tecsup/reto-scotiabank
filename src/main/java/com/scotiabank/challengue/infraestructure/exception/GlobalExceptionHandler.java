@@ -41,56 +41,20 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
         private Mono<ServerResponse> renderErrorResponse(ServerRequest req) {
             Throwable error = getError(req);
             log.error(">>> GlobalExceptionHandler error type: " + error.getMessage());
+            Map<String, Object> body = new HashMap<>();
 
             if (error instanceof ValidationException ve) {
-
-                Map<String, Object> body = new HashMap<>();
                 body.put("code", "validation_error");
                 body.put("errors", ve.getErrors());
-
-                return ServerResponse
-                        .status(HttpStatus.BAD_REQUEST)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(body));
+            } else {
+                body.put("code", "business_error");
+                body.put("error", error.getMessage());
             }
 
-            Map<String, Object> generalError = getErrorAttributes(req, ErrorAttributeOptions.defaults());
-            Map<String, Object> customError = new HashMap<>();
-
-            int statusCode = Integer.parseInt(generalError.get("status").toString());
-            HttpStatus httpStatus;
-
-            switch (statusCode) {
-                case 400, 422 -> {
-                    customError.put("message", error.getMessage());
-                    customError.put("status", 400);
-                    httpStatus = HttpStatus.BAD_REQUEST;
-                }
-                case 404 -> {
-                    customError.put("message", error.getMessage());
-                    customError.put("status", 404);
-                    httpStatus = HttpStatus.NOT_FOUND;
-                }
-                case 401, 403 -> {
-                    customError.put("message", error.getMessage());
-                    customError.put("status", 401);
-                    httpStatus = HttpStatus.UNAUTHORIZED;
-                }
-                case 500 -> {
-                    customError.put("message", error.getMessage());
-                    customError.put("status", 500);
-                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-                }
-                default -> {
-                    customError.put("message", error.getMessage());
-                    customError.put("status", 409);
-                    httpStatus = HttpStatus.CONFLICT;
-                }
-            }
-
-            return ServerResponse.status(httpStatus)
+            return ServerResponse
+                    .status(HttpStatus.BAD_REQUEST)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(customError));
+                    .body(BodyInserters.fromValue(body));
         }
 }
 

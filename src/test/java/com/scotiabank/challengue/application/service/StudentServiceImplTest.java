@@ -2,12 +2,14 @@ package com.scotiabank.challengue.application.service;
 
 import com.scotiabank.challengue.application.dto.BaseStudentDTO;
 import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
-import com.scotiabank.challengue.application.dto.SearchStudentResponseDTO;
 import com.scotiabank.challengue.application.dto.SearchStudentsRequestDTO;
+import com.scotiabank.challengue.application.enums.StatusEnum;
 import com.scotiabank.challengue.application.mapper.StudentMapper;
 import com.scotiabank.challengue.domain.exceptions.DuplicatedStudentException;
 import com.scotiabank.challengue.domain.model.StudentModel;
 import com.scotiabank.challengue.domain.ports.output.StudentRepositoryPort;
+import com.scotiabank.challengue.mock.StudentTestDataFactory;
+import com.scotiabank.challengue.util.StudentTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +22,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,56 +41,24 @@ class StudentServiceImplTest {
     @InjectMocks
     private StudentServiceImpl studentService;
 
-    // ====== Arrange común (datos base) ======
-
-    private CreateStudentRequestDTO createRequest;
-    private StudentModel activeStudentDomain;
-    private StudentModel inactiveStudentDomain;
-    private BaseStudentDTO activeStudentDto;
-    private BaseStudentDTO inactiveStudentDto;
+        private CreateStudentRequestDTO createRequest;
+        private StudentModel activeStudentDomain;
+        private StudentModel inactiveStudentDomain;
+        private BaseStudentDTO activeStudentDto;
+        private BaseStudentDTO inactiveStudentDto;
 
     @BeforeEach
-    void setUp() {
-        // Estos datos forman parte del "Arrange global" reutilizable
-        createRequest = CreateStudentRequestDTO.builder()
-                .id(1L)
-                .name("Juan")
-                .lastName("Perez")
-                .isActive(true)
-                .age(25)
-                .build();
+    void setUp() throws IOException {
+        // Cargar datos de prueba desde JSON usando el factory
+        createRequest = StudentTestDataFactory.getInstance().getCreateStudentRequestMock();
 
-        activeStudentDomain = StudentModel.builder()
-                .id(1L)
-                .name("Juan")
-                .lastName("Perez")
-                .status("activo")
-                .age(25)
-                .build();
+        activeStudentDomain = StudentTestData.activeStudentModel();
 
-        inactiveStudentDomain = StudentModel.builder()
-                .id(2L)
-                .name("Maria")
-                .lastName("Lopez")
-                .status("inactivo")
-                .age(30)
-                .build();
+        inactiveStudentDomain = StudentTestData.inactiveStudentModel();
 
-        activeStudentDto = BaseStudentDTO.builder()
-                .id(1L)
-                .name("Juan")
-                .lastName("Perez")
-                .status("activo")
-                .age(25)
-                .build();
+        activeStudentDto = StudentTestData.activeBaseStudentDTO();
 
-        inactiveStudentDto = BaseStudentDTO.builder()
-                .id(2L)
-                .name("Maria")
-                .lastName("Lopez")
-                .status("inactivo")
-                .age(30)
-                .build();
+        inactiveStudentDto = StudentTestData.inactiveBaseStudentDTO();
     }
 
 
@@ -129,7 +99,7 @@ class StudentServiceImplTest {
 
     @Test
     void searchStudents_ShouldReturnAllStudents_WhenIsActiveIsNull() {
-        // Arrange
+        // Arrange - Usar factory para cargar request desde JSON
         SearchStudentsRequestDTO request = SearchStudentsRequestDTO.builder()
                 .isActive(null)
                 .build();
@@ -139,78 +109,78 @@ class StudentServiceImplTest {
         when(studentMapper.toBaseStudentDTO(activeStudentDomain)).thenReturn(activeStudentDto);
         when(studentMapper.toBaseStudentDTO(inactiveStudentDomain)).thenReturn(inactiveStudentDto);
 
-        // Act
-        SearchStudentResponseDTO result = studentService.searchStudents(request)
-                .block(Duration.ofSeconds(5));
+        // Act & Assert
+        StepVerifier.create(studentService.searchStudents(request))
+                .assertNext(result -> {
+                    assertThat(result).isNotNull();
+                    assertThat(result.getStudents()).hasSize(2);
+                    assertThat(result.getStudents()).containsExactly(activeStudentDto, inactiveStudentDto);
+                })
+                .verifyComplete();
 
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.getStudents()).hasSize(2);
-        assertThat(result.getStudents()).containsExactly(activeStudentDto, inactiveStudentDto);
         verify(studentRepositoryPort).searchStudents(null);
     }
 
     @Test
-    void searchStudents_ShouldReturnActiveStudents_WhenIsActiveIsTrue() {
-        // Arrange
-        SearchStudentsRequestDTO request = SearchStudentsRequestDTO.builder()
-                .isActive(true)
-                .build();
+    void searchStudents_ShouldReturnActiveStudents_WhenIsActiveIsTrue() throws IOException {
+        // Arrange - Usar factory para cargar request desde JSON
+        SearchStudentsRequestDTO request = StudentTestDataFactory.getInstance().getSearchStudentsRequestMock();
 
-        when(studentRepositoryPort.searchStudents("activo"))
+        when(studentRepositoryPort.searchStudents(StatusEnum.ACTIVE.getDesc()))
                 .thenReturn(Flux.just(activeStudentDomain));
         when(studentMapper.toBaseStudentDTO(activeStudentDomain)).thenReturn(activeStudentDto);
 
-        // Act
-        SearchStudentResponseDTO result = studentService.searchStudents(request)
-                .block(Duration.ofSeconds(5));
+        // Act & Assert
+        StepVerifier.create(studentService.searchStudents(request))
+                .assertNext(result -> {
+                    assertThat(result).isNotNull();
+                    assertThat(result.getStudents()).hasSize(1);
+                    assertThat(result.getStudents().get(0).getStatus()).isEqualTo(StatusEnum.ACTIVE.getDesc());
+                })
+                .verifyComplete();
 
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.getStudents()).hasSize(1);
-        assertThat(result.getStudents().get(0).getStatus()).isEqualTo("activo");
-        verify(studentRepositoryPort).searchStudents("activo");
+        verify(studentRepositoryPort).searchStudents(StatusEnum.ACTIVE.getDesc());
     }
 
     @Test
-    void searchStudents_ShouldReturnInactiveStudents_WhenIsActiveIsFalse() {
-        // Arrange
+    void searchStudents_ShouldReturnInactiveStudents_WhenIsActiveIsFalse() throws IOException {
+        // Arrange - Construir request con isActive=false
         SearchStudentsRequestDTO request = SearchStudentsRequestDTO.builder()
                 .isActive(false)
                 .build();
 
-        when(studentRepositoryPort.searchStudents("inactivo"))
+        when(studentRepositoryPort.searchStudents(StatusEnum.INACTIVE.getDesc()))
                 .thenReturn(Flux.just(inactiveStudentDomain));
         when(studentMapper.toBaseStudentDTO(inactiveStudentDomain)).thenReturn(inactiveStudentDto);
 
-        // Act
-        SearchStudentResponseDTO result = studentService.searchStudents(request)
-                .block(Duration.ofSeconds(5));
+        // Act & Assert
+        StepVerifier.create(studentService.searchStudents(request))
+                .assertNext(result -> {
+                    assertThat(result).isNotNull();
+                    assertThat(result.getStudents()).hasSize(1);
+                    assertThat(result.getStudents().get(0).getStatus()).isEqualTo(StatusEnum.INACTIVE.getDesc());
+                })
+                .verifyComplete();
 
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.getStudents()).hasSize(1);
-        assertThat(result.getStudents().get(0).getStatus()).isEqualTo("inactivo");
-        verify(studentRepositoryPort).searchStudents("inactivo");
+        verify(studentRepositoryPort).searchStudents(StatusEnum.INACTIVE.getDesc());
     }
 
     @Test
-    void searchStudents_ShouldReturnEmptyList_WhenNoStudentsFound() {
-        // Arrange
-        SearchStudentsRequestDTO request = SearchStudentsRequestDTO.builder()
-                .isActive(true)
-                .build();
+    void searchStudents_ShouldReturnEmptyList_WhenNoStudentsFound() throws IOException {
+        // Arrange - Usar factory para cargar request desde JSON
+        SearchStudentsRequestDTO request = StudentTestDataFactory.getInstance().getSearchStudentsRequestMock();
 
-        when(studentRepositoryPort.searchStudents("activo"))
+        when(studentRepositoryPort.searchStudents(StatusEnum.ACTIVE.getDesc()))
                 .thenReturn(Flux.empty());
 
-        // Act
-        SearchStudentResponseDTO result = studentService.searchStudents(request)
-                .block(Duration.ofSeconds(5));
+        // Act & Assert
+        StepVerifier.create(studentService.searchStudents(request))
+                .assertNext(result -> {
+                    assertThat(result).isNotNull();
+                    assertThat(result.getStudents()).isEmpty();
+                })
+                .verifyComplete();
 
-        // Assert
-        assertThat(result).isNotNull();
-        assertThat(result.getStudents()).isEmpty();
-        verify(studentRepositoryPort).searchStudents("activo");
+        verify(studentRepositoryPort).searchStudents(StatusEnum.ACTIVE.getDesc());
     }
 }

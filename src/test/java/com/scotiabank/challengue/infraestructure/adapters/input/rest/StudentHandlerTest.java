@@ -3,9 +3,10 @@ package com.scotiabank.challengue.infraestructure.adapters.input.rest;
 import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
 import com.scotiabank.challengue.application.dto.SearchStudentResponseDTO;
 import com.scotiabank.challengue.application.dto.SearchStudentsRequestDTO;
-import com.scotiabank.challengue.application.dto.BaseStudentDTO;
 import com.scotiabank.challengue.domain.ports.input.StudentUseCase;
 import com.scotiabank.challengue.infraestructure.adapters.validator.RequestValidator;
+import com.scotiabank.challengue.mock.StudentTestDataFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,25 +41,36 @@ class StudentHandlerTest {
     @InjectMocks
     private StudentHandler studentHandler;
 
+    private CreateStudentRequestDTO createStudentRequest;
+    private SearchStudentsRequestDTO searchStudentsRequest;
+    private SearchStudentResponseDTO searchStudentResponse;
+    private SearchStudentResponseDTO emptySearchResponse;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        createStudentRequest = StudentTestDataFactory.getInstance().getCreateStudentRequestMock();
+        searchStudentsRequest = StudentTestDataFactory.getInstance().getSearchStudentsRequestMock();
+        searchStudentResponse = StudentTestDataFactory.getInstance().getSearchStudentsResponseMock();
+        
+        emptySearchResponse = SearchStudentResponseDTO.builder()
+                .students(List.of())
+                .build();
+    }
+
     @Test
     void registerStudent_ShouldReturnNoContent_WhenValidRequest() {
-        // Given
-        CreateStudentRequestDTO request = CreateStudentRequestDTO.builder()
-                .id(1L)
-                .name("Juan")
-                .lastName("Perez")
-                .isActive(true)
-                .age(25)
-                .build();
+        // Arrange
+        when(serverRequest.bodyToMono(CreateStudentRequestDTO.class))
+                .thenReturn(Mono.just(createStudentRequest));
+        when(requestValidator.validate(any(CreateStudentRequestDTO.class)))
+                .thenReturn(Mono.just(createStudentRequest));
+        when(studentUseCase.createStudent(any(CreateStudentRequestDTO.class)))
+                .thenReturn(Mono.empty());
 
-        when(serverRequest.bodyToMono(CreateStudentRequestDTO.class)).thenReturn(Mono.just(request));
-        when(requestValidator.validate(any(CreateStudentRequestDTO.class))).thenReturn(Mono.just(request));
-        when(studentUseCase.createStudent(any(CreateStudentRequestDTO.class))).thenReturn(Mono.empty());
-
-        // When
+        // Act
         Mono<ServerResponse> result = studentHandler.registerStudent(serverRequest);
 
-        // Then
+        // Assert
         StepVerifier.create(result)
                 .expectNextMatches(response -> response.statusCode().is2xxSuccessful())
                 .verifyComplete();
@@ -65,30 +78,16 @@ class StudentHandlerTest {
 
     @Test
     void searchStudents_ShouldReturnOk_WhenValidRequest() {
-        // Given
-        SearchStudentsRequestDTO request = SearchStudentsRequestDTO.builder()
-                .isActive(true)
-                .build();
+        // Arrange
+        when(serverRequest.bodyToMono(SearchStudentsRequestDTO.class))
+                .thenReturn(Mono.just(searchStudentsRequest));
+        when(studentUseCase.searchStudents(any(SearchStudentsRequestDTO.class)))
+                .thenReturn(Mono.just(searchStudentResponse));
 
-        BaseStudentDTO student = BaseStudentDTO.builder()
-                .id(1L)
-                .name("Juan")
-                .lastName("Perez")
-                .status("activo")
-                .age(25)
-                .build();
-
-        SearchStudentResponseDTO response = SearchStudentResponseDTO.builder()
-                .students(List.of(student))
-                .build();
-
-        when(serverRequest.bodyToMono(SearchStudentsRequestDTO.class)).thenReturn(Mono.just(request));
-        when(studentUseCase.searchStudents(any(SearchStudentsRequestDTO.class))).thenReturn(Mono.just(response));
-
-        // When
+        // Act
         Mono<ServerResponse> result = studentHandler.searchStudents(serverRequest);
 
-        // Then
+        // Assert
         StepVerifier.create(result)
                 .expectNextMatches(serverResponse -> serverResponse.statusCode().is2xxSuccessful())
                 .verifyComplete();
@@ -96,18 +95,16 @@ class StudentHandlerTest {
 
     @Test
     void searchStudents_ShouldReturnOk_WhenEmptyRequest() {
-        // Given
-        SearchStudentResponseDTO response = SearchStudentResponseDTO.builder()
-                .students(List.of())
-                .build();
+        // Arrange
+        when(serverRequest.bodyToMono(SearchStudentsRequestDTO.class))
+                .thenReturn(Mono.empty());
+        when(studentUseCase.searchStudents(any(SearchStudentsRequestDTO.class)))
+                .thenReturn(Mono.just(emptySearchResponse));
 
-        when(serverRequest.bodyToMono(SearchStudentsRequestDTO.class)).thenReturn(Mono.empty());
-        when(studentUseCase.searchStudents(any(SearchStudentsRequestDTO.class))).thenReturn(Mono.just(response));
-
-        // When
+        // Act
         Mono<ServerResponse> result = studentHandler.searchStudents(serverRequest);
 
-        // Then
+        // Assert
         StepVerifier.create(result)
                 .expectNextMatches(serverResponse -> serverResponse.statusCode().is2xxSuccessful())
                 .verifyComplete();
