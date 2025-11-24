@@ -1,9 +1,10 @@
 package com.scotiabank.challengue.infraestructure.exception;
 
+import com.scotiabank.challengue.application.exception.BusinessException;
+import com.scotiabank.challengue.application.exception.FieldError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
-import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
@@ -40,15 +41,24 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
         private Mono<ServerResponse> renderErrorResponse(ServerRequest req) {
             Throwable error = getError(req);
-            log.error(">>> GlobalExceptionHandler error type: " + error.getMessage());
+            log.error(">>> GlobalExceptionHandler error message: " + error.getMessage());
+            
             Map<String, Object> body = new HashMap<>();
 
-            if (error instanceof ValidationException ve) {
-                body.put("code", "validation_error");
-                body.put("errors", ve.getErrors());
-            } else {
-                body.put("code", "business_error");
-                body.put("error", error.getMessage());
+            switch (error) {
+                case ValidationException validationException -> {
+                    body.put("code", "validation_error");
+                    body.put("errors", validationException.getErrors());
+                }
+                case BusinessException businessException -> {
+                    body.put("code", "business_error");
+                    putKeyIfNotNull(body,"field", resolveField(businessException));
+                    body.put("message", businessException.getMessage());
+                }
+                default -> {
+                    body.put("code", "functional_error");
+                    body.put("message", error.getMessage());
+                }
             }
 
             return ServerResponse
@@ -56,5 +66,19 @@ public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(body));
         }
-}
 
+
+    private String resolveField(Throwable error) {
+        if (error instanceof FieldError fieldError) {
+            return fieldError.getFieldName();
+        }
+        return null;
+    }
+
+    private void putKeyIfNotNull(Map<String, Object> body, String key, Object value) {
+        if (value != null) {
+            body.put(key, value);
+        }
+    }
+
+}

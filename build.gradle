@@ -48,3 +48,11 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+compileJava {
+	options.compilerArgs += ['--enable-preview']
+}
+
+test {
+	jvmArgs '--enable-preview'
+}

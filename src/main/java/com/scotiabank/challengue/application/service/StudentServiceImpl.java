@@ -32,7 +32,6 @@ public class StudentServiceImpl implements StudentUseCase {
     public Mono<Void> createStudent(CreateStudentRequestDTO createStudentRequestDTO) {
         log.info("Executing registerStudent with ID: {}", createStudentRequestDTO.getId());
         return Mono.defer(() -> {
-                    log.info("Executing registerStudent with ID: {}", createStudentRequestDTO.getId());
                     StudentModel studentModel = studentMapper.fromCreateRequestDTO(createStudentRequestDTO);
 
                     return studentRepositoryPort.existsById(studentModel.id())
