@@ -28,7 +28,7 @@ public class StudentHandler {
                 .flatMap(requestValidator:: validate)
                 .flatMap(dto ->
                         studentUseCase.createStudent(dto)
-                                .doOnSuccess(v -> log.info("StudentHandler Student registered successfully with ID: {}", dto.getId()))
+                                .doOnSuccess(v -> log.info("StudentHandler - Student registered successfully with ID: {}", dto.getId()))
                                 .then(ServerResponse.noContent().build())
                 );
     }

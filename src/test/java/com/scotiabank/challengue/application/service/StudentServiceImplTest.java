@@ -70,7 +70,7 @@ class StudentServiceImplTest {
         when(studentRepositoryPort.save(any(StudentModel.class))).thenReturn(Mono.empty());
 
         // Act
-        var result = studentService.createStudent(createRequest);
+        Mono<Void> result = studentService.createStudent(createRequest);
 
         // Assert
         StepVerifier.create(result)
@@ -87,7 +87,7 @@ class StudentServiceImplTest {
         when(studentRepositoryPort.existsById(1L)).thenReturn(Mono.just(true));
 
         // Act
-        var result = studentService.createStudent(createRequest);
+        Mono<Void> result = studentService.createStudent(createRequest);
 
         // Assert
         StepVerifier.create(result)

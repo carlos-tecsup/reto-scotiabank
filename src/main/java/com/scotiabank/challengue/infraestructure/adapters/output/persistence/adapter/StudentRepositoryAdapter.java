@@ -38,7 +38,7 @@ public class StudentRepositoryAdapter implements StudentRepositoryPort {
                     return template.insert(entity)
                             .map(studentMapper::toDomain)
                             .doOnSuccess(saved ->
-                                    log.info("StudentRepositoryAdapter Student saved successfully with ID: {}", saved.id()))
+                                    log.info("StudentRepositoryAdapter - Student saved successfully with ID: {}", saved.id()))
                             .doOnError(e ->
                                     log.error("Error saving student with ID: {}", studentModel.id(), e));
                 }).then();
@@ -46,8 +46,8 @@ public class StudentRepositoryAdapter implements StudentRepositoryPort {
 
     @Override
     public Flux<StudentModel> searchStudents(String status) {
-        Flux<StudentEntity> query = (Objects.isNull(status)) ? studentRepository.findAll()
-                                                             : studentRepository.findByStatus(status);
+        Flux<StudentEntity> query = (Objects.isNull(status)) ? studentRepository.findAllByOrderByIdDesc()
+                                                             : studentRepository.findByStatusOrderByIdDesc(status);
                 
         return query.map(studentMapper::toDomain);
     }

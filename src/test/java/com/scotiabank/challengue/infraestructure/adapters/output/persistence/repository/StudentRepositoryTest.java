@@ -47,7 +47,7 @@ class StudentRepositoryTest {
 
     @Test
     void save_ShouldPersistEntity() {
-                // Arrange: insertar usando R2dbcEntityTemplate (como en el código real)
+                // Arrange
                 StepVerifier.create(template.insert(StudentEntity.class).using(activeStudent1))
                 .assertNext(savedStudent -> {
                     assertThat(savedStudent).isNotNull();
@@ -60,7 +60,7 @@ class StudentRepositoryTest {
 
     @Test
     void findById_ShouldReturnEntity_WhenExists() {
-                // Arrange: insertar usando R2dbcEntityTemplate
+                // Arrange
                 StudentEntity savedStudent = template.insert(StudentEntity.class).using(activeStudent1).block();
 
                 // Act & Assert
@@ -133,7 +133,7 @@ class StudentRepositoryTest {
     @Test
     void deleteById_ShouldRemoveEntity() {
         // Arrange
-                StudentEntity savedStudent = template.insert(StudentEntity.class).using(activeStudent1).block();
+        StudentEntity savedStudent = template.insert(StudentEntity.class).using(activeStudent1).block();
 
         // Act
         StepVerifier.create(studentRepository.deleteById(savedStudent.getId()))

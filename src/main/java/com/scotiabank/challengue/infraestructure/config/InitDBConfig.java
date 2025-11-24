@@ -21,7 +21,8 @@ public class InitDBConfig {
         initializer.setConnectionFactory(connectionFactory);
 
         CompositeDatabasePopulator populator = new CompositeDatabasePopulator();
-        populator.addPopulators(new ResourceDatabasePopulator(new  ClassPathResource("createTable.sql")));
+        populator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("createTable.sql")));
+        populator.addPopulators(new ResourceDatabasePopulator(new ClassPathResource("insert.sql")));
         initializer.setDatabasePopulator(populator);
         log.info("Inicialización completada");
 
