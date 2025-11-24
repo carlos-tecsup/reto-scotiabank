@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+
+import java.util.Objects;
 import org.springframework.test.context.TestPropertySource;
 import reactor.test.StepVerifier;
 
@@ -84,14 +86,14 @@ class StudentRepositoryTest {
     }
 
     @Test
-    void findByStatus_ShouldReturnFilteredEntities() {
+    void findByStatusOrderByIdDesc_ShouldReturnFilteredEntities() {
         // Arrange
                 template.insert(StudentEntity.class).using(activeStudent1).block();
                 template.insert(StudentEntity.class).using(activeStudent2).block();
                 template.insert(StudentEntity.class).using(inactiveStudent).block();
 
         // Act & Assert
-        StepVerifier.create(studentRepository.findByStatus(StatusEnum.ACTIVE.getDesc()))
+        StepVerifier.create(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc()))
                 .expectNextMatches(student -> StatusEnum.ACTIVE.getDesc().equals(student.getStatus()))
                 .expectNextMatches(student -> StatusEnum.ACTIVE.getDesc().equals(student.getStatus()))
                 .thenConsumeWhile(student -> StatusEnum.ACTIVE.getDesc().equals(student.getStatus()))
@@ -99,12 +101,12 @@ class StudentRepositoryTest {
     }
 
     @Test
-    void findByStatus_ShouldReturnEmpty_WhenNoMatch() {
+    void findByStatusOrderByIdDesc_ShouldReturnEmpty_WhenNoMatch() {
         // Arrange
         String nonExistentStatus = "nonexistent";
 
         // Act & Assert
-        StepVerifier.create(studentRepository.findByStatus(nonExistentStatus))
+        StepVerifier.create(studentRepository.findByStatusOrderByIdDesc(nonExistentStatus))
                 .verifyComplete();
     }
 
@@ -151,10 +153,10 @@ class StudentRepositoryTest {
                 template.insert(StudentEntity.class).using(inactiveStudent).block();
 
         // Act & Assert
-        StepVerifier.create(studentRepository.findAll())
-                .expectNextMatches(student -> student.getId() != null)
-                .expectNextMatches(student -> student.getId() != null)
-                .thenConsumeWhile(student -> student.getId() != null)
+        StepVerifier.create(studentRepository.findAllByOrderByIdDesc())
+                .expectNextMatches(student -> Objects.nonNull(student.getId()))
+                .expectNextMatches(student -> Objects.nonNull(student.getId()))
+                .thenConsumeWhile(student -> Objects.nonNull(student.getId()))
                 .verifyComplete();
     }
 }

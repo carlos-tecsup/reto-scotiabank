@@ -25,7 +25,6 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,7 +66,7 @@ class StudentServiceImplTest {
         // Arrange
         when(studentMapper.fromCreateRequestDTO(createRequest)).thenReturn(activeStudentDomain);
         when(studentRepositoryPort.existsById(1L)).thenReturn(Mono.just(false));
-        when(studentRepositoryPort.save(any(StudentModel.class))).thenReturn(Mono.empty());
+        when(studentRepositoryPort.save(activeStudentDomain)).thenReturn(Mono.empty());
 
         // Act
         Mono<Void> result = studentService.createStudent(createRequest);
@@ -77,7 +76,7 @@ class StudentServiceImplTest {
                 .verifyComplete();
 
         verify(studentRepositoryPort).existsById(1L);
-        verify(studentRepositoryPort).save(any(StudentModel.class));
+        verify(studentRepositoryPort).save(activeStudentDomain);
     }
 
     @Test

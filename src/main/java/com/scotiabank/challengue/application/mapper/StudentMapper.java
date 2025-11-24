@@ -2,15 +2,19 @@ package com.scotiabank.challengue.application.mapper;
 
 import com.scotiabank.challengue.application.dto.BaseStudentDTO;
 import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
+import com.scotiabank.challengue.application.enums.StatusEnum;
+import com.scotiabank.challengue.application.util.StatusUtil;
 import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
 import com.scotiabank.challengue.domain.model.StudentModel;
 import org.mapstruct.*;
+
+import java.util.Objects;
 
 import static org.mapstruct.InjectionStrategy.FIELD;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 import static org.mapstruct.ReportingPolicy.IGNORE;
 
-@Mapper(componentModel = SPRING, unmappedTargetPolicy = IGNORE, injectionStrategy = FIELD)
+@Mapper(componentModel = SPRING, unmappedTargetPolicy = IGNORE, injectionStrategy = FIELD, uses = StatusUtil.class)
 public interface StudentMapper {
 
 
@@ -19,7 +23,8 @@ public interface StudentMapper {
     BaseStudentDTO toBaseStudentDTO(StudentModel model);
 
     // CreateStudentRequestDTO → DOMAIN
-    @Mapping(target = "status", expression = "java(dto.getIsActive() != null && dto.getIsActive() ? \"activo\" : \"inactivo\")")
+    @Mapping(target = "status", source = "isActive", qualifiedByName = "fromBooleanToStatus" )
+
     StudentModel fromCreateRequestDTO(CreateStudentRequestDTO dto);
 
 
@@ -28,6 +33,5 @@ public interface StudentMapper {
 
     // ENTITY → DOMAIN
     StudentModel toDomain(StudentEntity entity);
-
 
 }

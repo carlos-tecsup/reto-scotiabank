@@ -20,7 +20,6 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
@@ -62,9 +61,9 @@ class StudentHandlerTest {
         // Arrange
         when(serverRequest.bodyToMono(CreateStudentRequestDTO.class))
                 .thenReturn(Mono.just(createStudentRequest));
-        when(requestValidator.validate(any(CreateStudentRequestDTO.class)))
+        when(requestValidator.validate(createStudentRequest))
                 .thenReturn(Mono.just(createStudentRequest));
-        when(studentUseCase.createStudent(any(CreateStudentRequestDTO.class)))
+        when(studentUseCase.createStudent(createStudentRequest))
                 .thenReturn(Mono.empty());
 
         // Act
@@ -81,7 +80,7 @@ class StudentHandlerTest {
         // Arrange
         when(serverRequest.bodyToMono(SearchStudentsRequestDTO.class))
                 .thenReturn(Mono.just(searchStudentsRequest));
-        when(studentUseCase.searchStudents(any(SearchStudentsRequestDTO.class)))
+        when(studentUseCase.searchStudents(searchStudentsRequest))
                 .thenReturn(Mono.just(searchStudentResponse));
 
         // Act
@@ -96,9 +95,11 @@ class StudentHandlerTest {
     @Test
     void searchStudents_ShouldReturnOk_WhenEmptyRequest() {
         // Arrange
+        SearchStudentsRequestDTO emptyRequest = SearchStudentsRequestDTO.builder().build();
+        
         when(serverRequest.bodyToMono(SearchStudentsRequestDTO.class))
                 .thenReturn(Mono.empty());
-        when(studentUseCase.searchStudents(any(SearchStudentsRequestDTO.class)))
+        when(studentUseCase.searchStudents(emptyRequest))
                 .thenReturn(Mono.just(emptySearchResponse));
 
         // Act

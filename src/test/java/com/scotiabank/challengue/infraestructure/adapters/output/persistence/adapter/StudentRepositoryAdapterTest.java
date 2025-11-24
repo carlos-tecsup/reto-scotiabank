@@ -73,7 +73,7 @@ class StudentRepositoryAdapterTest {
     @Test
     void searchStudents_ShouldReturnAllStudents_WhenStatusIsNull() {
         // Arrange
-        when(studentRepository.findAll()).thenReturn(Flux.just(activeStudentEntity, inactiveStudentEntity));
+        when(studentRepository.findAllByOrderByIdDesc()).thenReturn(Flux.just(activeStudentEntity, inactiveStudentEntity));
         when(studentMapper.toDomain(activeStudentEntity)).thenReturn(activeStudentModel);
         when(studentMapper.toDomain(inactiveStudentEntity)).thenReturn(inactiveStudentModel);
 
@@ -83,13 +83,13 @@ class StudentRepositoryAdapterTest {
                 .expectNext(inactiveStudentModel)
                 .verifyComplete();
 
-        verify(studentRepository).findAll();
+        verify(studentRepository).findAllByOrderByIdDesc();
     }
 
     @Test
     void searchStudents_ShouldReturnFilteredStudents_WhenStatusIsProvided() {
         // Arrange
-        when(studentRepository.findByStatus(StatusEnum.ACTIVE.getDesc())).thenReturn(Flux.just(activeStudentEntity));
+        when(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc())).thenReturn(Flux.just(activeStudentEntity));
         when(studentMapper.toDomain(activeStudentEntity)).thenReturn(activeStudentModel);
 
         // Act & Assert
@@ -100,19 +100,19 @@ class StudentRepositoryAdapterTest {
                 })
                 .verifyComplete();
 
-        verify(studentRepository).findByStatus(StatusEnum.ACTIVE.getDesc());
+        verify(studentRepository).findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc());
     }
 
     @Test
     void searchStudents_ShouldReturnEmptyFlux_WhenNoStudentsFound() {
         // Arrange
-        when(studentRepository.findByStatus(StatusEnum.ACTIVE.getDesc())).thenReturn(Flux.empty());
+        when(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc())).thenReturn(Flux.empty());
 
         // Act & Assert
         StepVerifier.create(studentRepositoryAdapter.searchStudents(StatusEnum.ACTIVE.getDesc()))
                 .verifyComplete();
 
-        verify(studentRepository).findByStatus(StatusEnum.ACTIVE.getDesc());
+        verify(studentRepository).findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc());
     }
 
     @Test
