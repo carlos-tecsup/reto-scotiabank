@@ -1,4 +1,4 @@
-package com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity;
+package com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.entity;
 
 
 import lombok.*;

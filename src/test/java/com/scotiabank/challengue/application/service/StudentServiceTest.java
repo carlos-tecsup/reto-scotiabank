@@ -120,7 +120,7 @@ class StudentServiceTest {
     @Test
     void searchStudents_ShouldReturnActiveStudents_WhenIsActiveIsTrue() {
         // Act
-        when(studentRepositoryPort.searchStudents(StatusEnum.ACTIVE.getDesc()))
+        when(studentRepositoryPort.searchStudents(StatusEnum.ACTIVE.getValue()))
                 .thenReturn(Flux.just(activeStudentDomain));
         when(studentMapper.toBaseStudentDTO(activeStudentDomain)).thenReturn(activeStudentDto);
 
@@ -129,17 +129,17 @@ class StudentServiceTest {
                 .assertNext(result -> {
                     assertThat(result).isNotNull();
                     assertThat(result.getStudents()).hasSize(1);
-                    assertThat(result.getStudents().get(0).getStatus()).isEqualTo(StatusEnum.ACTIVE.getDesc());
+                    assertThat(result.getStudents().get(0).getStatus()).isEqualTo(StatusEnum.ACTIVE.getValue());
                 })
                 .verifyComplete();
 
-        verify(studentRepositoryPort).searchStudents(StatusEnum.ACTIVE.getDesc());
+        verify(studentRepositoryPort).searchStudents(StatusEnum.ACTIVE.getValue());
     }
 
     @Test
     void searchStudents_ShouldReturnInactiveStudents_WhenIsActiveIsFalse() {
         // Act
-        when(studentRepositoryPort.searchStudents(StatusEnum.INACTIVE.getDesc()))
+        when(studentRepositoryPort.searchStudents(StatusEnum.INACTIVE.getValue()))
                 .thenReturn(Flux.just(inactiveStudentDomain));
         when(studentMapper.toBaseStudentDTO(inactiveStudentDomain)).thenReturn(inactiveStudentDto);
 
@@ -148,17 +148,17 @@ class StudentServiceTest {
                 .assertNext(result -> {
                     assertThat(result).isNotNull();
                     assertThat(result.getStudents()).hasSize(1);
-                    assertThat(result.getStudents().get(0).getStatus()).isEqualTo(StatusEnum.INACTIVE.getDesc());
+                    assertThat(result.getStudents().get(0).getStatus()).isEqualTo(StatusEnum.INACTIVE.getValue());
                 })
                 .verifyComplete();
 
-        verify(studentRepositoryPort).searchStudents(StatusEnum.INACTIVE.getDesc());
+        verify(studentRepositoryPort).searchStudents(StatusEnum.INACTIVE.getValue());
     }
 
     @Test
     void searchStudents_ShouldReturnEmptyList_WhenNoStudentsFound() {
         // Act
-        when(studentRepositoryPort.searchStudents(StatusEnum.ACTIVE.getDesc()))
+        when(studentRepositoryPort.searchStudents(StatusEnum.ACTIVE.getValue()))
                 .thenReturn(Flux.empty());
 
         // Assert
@@ -169,6 +169,6 @@ class StudentServiceTest {
                 })
                 .verifyComplete();
 
-        verify(studentRepositoryPort).searchStudents(StatusEnum.ACTIVE.getDesc());
+        verify(studentRepositoryPort).searchStudents(StatusEnum.ACTIVE.getValue());
     }
 }

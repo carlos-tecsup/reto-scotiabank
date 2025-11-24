@@ -16,7 +16,7 @@ public enum StatusEnum {
     INACTIVE("0","inactivo");
 
     private final String cod;
-    private final String desc;
+    private final String value;
 
     private static final Map<String, StatusEnum> lookup = new LinkedHashMap<>();
 

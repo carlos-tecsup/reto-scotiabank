@@ -1,10 +1,10 @@
-package com.scotiabank.challengue.infraestructure.adapters.output.persistence.adapter;
+package com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.adapter;
 
 import com.scotiabank.challengue.application.mapper.StudentMapper;
 import com.scotiabank.challengue.domain.model.StudentModel;
 import com.scotiabank.challengue.domain.ports.output.StudentRepositoryPort;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.repository.StudentRepository;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.repository.StudentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Component;

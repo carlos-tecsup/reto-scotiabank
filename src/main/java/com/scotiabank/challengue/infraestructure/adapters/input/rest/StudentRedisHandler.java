@@ -13,26 +13,27 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-
 @Slf4j
 @Component
-public class StudentHandler {
-    private final StudentUseCase studentUseCase;
+public class StudentRedisHandler {
+
+    private final StudentUseCase studentRedisService;
     private final RequestValidator requestValidator;
 
-    public StudentHandler(@Qualifier("studentService") StudentUseCase studentUseCase, RequestValidator requestValidator) {
-        this.studentUseCase = studentUseCase;
+    public StudentRedisHandler(
+            @Qualifier("redisStudentService") StudentUseCase studentRedisService,
+            RequestValidator requestValidator) {
+        this.studentRedisService = studentRedisService;
         this.requestValidator = requestValidator;
     }
-
 
     public Mono<ServerResponse> registerStudent(ServerRequest request) {
         Mono<Void> registerMono = request
                 .bodyToMono(CreateStudentRequestDTO.class)
                 .flatMap(requestValidator::validate)
-                .flatMap(dto -> studentUseCase.createStudent(dto)
+                .flatMap(dto -> studentRedisService.createStudent(dto)
                         .doOnSuccess(v -> log.info(
-                                "StudentHandler - Student registered successfully with ID: {}",
+                                "StudentRedisHandler - Student registered in Redis with ID: {}",
                                 dto.getId()
                         ))
                 );
@@ -40,17 +41,15 @@ public class StudentHandler {
         return registerMono.then(ServerResponse.noContent().build());
     }
 
-
     public Mono<ServerResponse> searchStudents(ServerRequest request) {
         Mono<SearchStudentResponseDTO> responseMono = request
                 .bodyToMono(SearchStudentsRequestDTO.class)
                 .defaultIfEmpty(SearchStudentsRequestDTO.builder().build())
-                .flatMap(studentUseCase::searchStudents);
+                .flatMap(studentRedisService::searchStudents);
 
         return ServerResponse
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(responseMono, SearchStudentResponseDTO.class);
     }
-
 }

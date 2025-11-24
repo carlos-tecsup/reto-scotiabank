@@ -10,6 +10,7 @@ import com.scotiabank.challengue.domain.model.StudentModel;
 import com.scotiabank.challengue.domain.ports.input.StudentUseCase;
 import com.scotiabank.challengue.domain.ports.output.StudentRepositoryPort;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -23,7 +24,10 @@ import static com.scotiabank.challengue.application.constants.Constants.STUDENT_
 public class StudentService implements StudentUseCase {
     private final StudentRepositoryPort studentRepositoryPort;
     private final StudentMapper studentMapper;
-    public StudentService(StudentRepositoryPort studentRepositoryPort, StudentMapper studentMapper) {
+    
+    public StudentService(
+            @Qualifier("studentRepositoryAdapter") StudentRepositoryPort studentRepositoryPort, 
+            StudentMapper studentMapper) {
         this.studentRepositoryPort = studentRepositoryPort;
         this.studentMapper = studentMapper;
     }
@@ -50,7 +54,7 @@ public class StudentService implements StudentUseCase {
         
         String status = null;
         if (Objects.nonNull(searchRequest.getIsActive())) {
-            status = searchRequest.getIsActive() ? StatusEnum.ACTIVE.getDesc() : StatusEnum.INACTIVE.getDesc();
+            status = searchRequest.getIsActive() ? StatusEnum.ACTIVE.getValue() : StatusEnum.INACTIVE.getValue();
         }
         
         return studentRepositoryPort.searchStudents(status)

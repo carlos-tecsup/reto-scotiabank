@@ -2,13 +2,11 @@ package com.scotiabank.challengue.application.mapper;
 
 import com.scotiabank.challengue.application.dto.BaseStudentDTO;
 import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
-import com.scotiabank.challengue.application.enums.StatusEnum;
 import com.scotiabank.challengue.application.util.StatusUtil;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.redis.entity.StudentRedisEntity;
 import com.scotiabank.challengue.domain.model.StudentModel;
 import org.mapstruct.*;
-
-import java.util.Objects;
 
 import static org.mapstruct.InjectionStrategy.FIELD;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
@@ -19,7 +17,7 @@ public interface StudentMapper {
 
 
     // DOMAIN → BaseStudentDTO
-    @Mapping(target = "status", source = "status")
+    @Mapping(target = "status", source = "status", qualifiedByName = "fromCodeToValue")
     BaseStudentDTO toBaseStudentDTO(StudentModel model);
 
     // CreateStudentRequestDTO → DOMAIN
@@ -33,5 +31,11 @@ public interface StudentMapper {
 
     // ENTITY → DOMAIN
     StudentModel toDomain(StudentEntity entity);
+
+    // DOMAIN → REDIS ENTITY
+    StudentRedisEntity toRedisEntity(StudentModel model);
+
+    // REDIS ENTITY → DOMAIN
+    StudentModel fromRedisEntity(StudentRedisEntity entity);
 
 }

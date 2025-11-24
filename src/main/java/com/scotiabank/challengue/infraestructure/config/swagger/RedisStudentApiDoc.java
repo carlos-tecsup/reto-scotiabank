@@ -15,37 +15,37 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Anotaciones de documentación Swagger para los endpoints de estudiantes.
+ * Anotaciones de documentación Swagger para los endpoints de estudiantes con Redis.
  */
-public class StudentApiDoc {
+public class RedisStudentApiDoc {
 
     @Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @RouterOperations({
             @RouterOperation(
-                    path = "/api/students/create",
+                    path = "/api/redis/students/create",
                     method = RequestMethod.POST,
-                    beanClass = com.scotiabank.challengue.infraestructure.adapters.input.rest.StudentHandler.class,
+                    beanClass = com.scotiabank.challengue.infraestructure.adapters.input.rest.StudentRedisHandler.class,
                     beanMethod = "registerStudent",
                     operation = @Operation(
-                            operationId = "registerStudent",
-                            summary = "Registrar nuevo estudiante",
-                            description = "Crea un nuevo estudiante en el sistema",
-                            tags = {"Students"},
+                            operationId = "registerStudentRedis",
+                            summary = "Registrar nuevo estudiante en Redis",
+                            description = "Crea un nuevo estudiante en Redis con TTL de 30 minutos",
+                            tags = {"Redis Students"},
                             requestBody = @RequestBody(
-                                    description = "Datos del estudiante a crear",
+                                    description = "Datos del estudiante a crear en Redis",
                                     required = true,
                                     content = @Content(
                                             schema = @Schema(
                                                     implementation = com.scotiabank.challengue.application.dto.CreateStudentRequestDTO.class,
-                                                    example = "{\"id\": 45, \"name\": \"Andrea\", \"lastName\": \"Silva\", \"age\": 27, \"isActive\": true}"
+                                                    example = "{\"id\": 200, \"name\": \"Maria\", \"lastName\": \"Garcia\", \"age\": 30, \"isActive\": true}"
                                             )
                                     )
                             ),
                             responses = {
                                     @ApiResponse(
                                             responseCode = "204",
-                                            description = "Estudiante creado exitosamente"
+                                            description = "Estudiante creado exitosamente en Redis"
                                     ),
                                     @ApiResponse(
                                             responseCode = "400",
@@ -59,11 +59,11 @@ public class StudentApiDoc {
                                     ),
                                     @ApiResponse(
                                             responseCode = "409",
-                                            description = "El estudiante ya existe - ID duplicado",
+                                            description = "El estudiante ya existe en Redis - ID duplicado",
                                             content = @Content(
                                                     mediaType = "application/json",
                                                     schema = @Schema(
-                                                            example = "{\"code\":\"business_error\",\"field\":\"id\",\"message\":\"Ya hay un estudiante registrado con id 16\"}"
+                                                            example = "{\"code\":\"business_error\",\"field\":\"id\",\"message\":\"Ya hay un estudiante registrado con id 200\"}"
                                                     )
                                             )
                                     )
@@ -71,24 +71,24 @@ public class StudentApiDoc {
                     )
             ),
             @RouterOperation(
-                    path = "/api/students/search",
+                    path = "/api/redis/students/search",
                     method = RequestMethod.GET,
-                    beanClass = com.scotiabank.challengue.infraestructure.adapters.input.rest.StudentHandler.class,
+                    beanClass = com.scotiabank.challengue.infraestructure.adapters.input.rest.StudentRedisHandler.class,
                     beanMethod = "searchStudents",
                     operation = @Operation(
-                            operationId = "searchStudents",
-                            summary = "Buscar estudiantes",
-                            description = "Busca estudiantes según filtros. Ejemplos: {} (todos), {\"isActive\": true} (solo activos), {\"isActive\": false} (solo inactivos)",
-                            tags = {"Students"},
+                            operationId = "searchStudentsRedis",
+                            summary = "Buscar estudiantes en Redis",
+                            description = "Busca estudiantes almacenados en Redis según filtros. Resultados ordenados por ID descendente. Ejemplos: {} (todos), {\"isActive\": true} (solo activos), {\"isActive\": false} (solo inactivos)",
+                            tags = {"Redis Students"},
                             responses = {
                                     @ApiResponse(
                                             responseCode = "200",
-                                            description = "Lista de estudiantes encontrados",
+                                            description = "Lista de estudiantes encontrados en Redis (ordenados por ID descendente)",
                                             content = @Content(
                                                     mediaType = "application/json",
                                                     schema = @Schema(
                                                             implementation = com.scotiabank.challengue.application.dto.SearchStudentResponseDTO.class,
-                                                            example = "{\"students\":[{\"id\":1,\"name\":\"Juan\",\"lastName\":\"Perez\",\"status\":\"activo\",\"age\":26}]}"
+                                                            example = "{\"students\":[{\"id\":10,\"name\":\"Gabriela\",\"lastName\":\"Rojas\",\"status\":\"activo\",\"age\":20}]}"
                                                     )
                                             )
                                     )
@@ -96,6 +96,6 @@ public class StudentApiDoc {
                     )
             )
     })
-    public @interface StudentRouterDoc {
+    public @interface RedisStudentRouterDoc {
     }
 }

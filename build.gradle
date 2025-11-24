@@ -38,6 +38,8 @@ dependencies {
 	//Dependencias para R2DBC con H2
 	implementation 'io.r2dbc:r2dbc-h2'
 	runtimeOnly 'com.h2database:h2'
+	//Dependencias para Redis reactivo
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

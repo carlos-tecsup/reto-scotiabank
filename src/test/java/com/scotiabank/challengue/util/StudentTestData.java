@@ -5,7 +5,7 @@ import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
 import com.scotiabank.challengue.application.dto.SearchStudentsRequestDTO;
 import com.scotiabank.challengue.application.enums.StatusEnum;
 import com.scotiabank.challengue.domain.model.StudentModel;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.entity.StudentEntity;
 
 public final class StudentTestData {
 
@@ -17,7 +17,7 @@ public final class StudentTestData {
                 .id(1L)
                 .name("Juan")
                 .lastName("Perez")
-                .status(StatusEnum.ACTIVE.getDesc())
+                .status(StatusEnum.ACTIVE.getValue())
                 .age(25)
                 .build();
     }
@@ -27,7 +27,7 @@ public final class StudentTestData {
                 .id(2L)
                 .name("Maria")
                 .lastName("Lopez")
-                .status(StatusEnum.INACTIVE.getDesc())
+                .status(StatusEnum.INACTIVE.getValue())
                 .age(30)
                 .build();
     }
@@ -37,7 +37,7 @@ public final class StudentTestData {
                 .id(1L)
                 .name("Juan")
                 .lastName("Perez")
-                .status(StatusEnum.ACTIVE.getDesc())
+                .status(StatusEnum.ACTIVE.getValue())
                 .age(25)
                 .build();
     }
@@ -47,7 +47,7 @@ public final class StudentTestData {
                 .id(2L)
                 .name("Carlos")
                 .lastName("Garcia")
-                .status(StatusEnum.ACTIVE.getDesc())
+                .status(StatusEnum.ACTIVE.getValue())
                 .age(28)
                 .build();
     }
@@ -57,7 +57,7 @@ public final class StudentTestData {
                 .id(3L)
                 .name("Carlos")
                 .lastName("Garcia")
-                .status(StatusEnum.ACTIVE.getDesc())
+                .status(StatusEnum.ACTIVE.getValue())
                 .age(28)
                 .build();
     }
@@ -66,7 +66,7 @@ public final class StudentTestData {
                 .id(4L)
                 .name("Maria")
                 .lastName("Lopez")
-                .status(StatusEnum.INACTIVE.getDesc())
+                .status(StatusEnum.INACTIVE.getValue())
                 .age(30)
                 .build();
     }
@@ -122,7 +122,7 @@ public final class StudentTestData {
                 .id(1L)
                 .name("Juan")
                 .lastName("Perez")
-                .status(StatusEnum.ACTIVE.getDesc())
+                .status(StatusEnum.ACTIVE.getValue())
                 .age(25)
                 .build();
     }
@@ -132,7 +132,7 @@ public final class StudentTestData {
                 .id(2L)
                 .name("Maria")
                 .lastName("Lopez")
-                .status(StatusEnum.INACTIVE.getDesc())
+                .status(StatusEnum.INACTIVE.getValue())
                 .age(30)
                 .build();
     }

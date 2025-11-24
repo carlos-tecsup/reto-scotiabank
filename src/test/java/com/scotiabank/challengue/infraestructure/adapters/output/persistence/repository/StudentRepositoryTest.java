@@ -1,7 +1,8 @@
 package com.scotiabank.challengue.infraestructure.adapters.output.persistence.repository;
 
 import com.scotiabank.challengue.application.enums.StatusEnum;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.repository.StudentRepository;
 import com.scotiabank.challengue.util.StudentTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ class StudentRepositoryTest {
         assertThat(savedStudent).isNotNull();
         assertThat(savedStudent.getId()).isEqualTo(1L);
         assertThat(savedStudent.getName()).isEqualTo("Juan");
-        assertThat(savedStudent.getStatus()).isEqualTo(StatusEnum.ACTIVE.getDesc());
+        assertThat(savedStudent.getStatus()).isEqualTo(StatusEnum.ACTIVE.getValue());
     })
     .verifyComplete();
     }
@@ -68,13 +69,13 @@ class StudentRepositoryTest {
                     assertThat(students).hasSize(3);
                     
                     assertThat(students)
-                            .filteredOn(student -> StatusEnum.ACTIVE.getDesc().equals(student.getStatus()))
+                            .filteredOn(student -> StatusEnum.ACTIVE.getValue().equals(student.getStatus()))
                             .hasSize(2)
                             .extracting(StudentEntity::getId)
                             .containsExactlyInAnyOrder(savedActiveStudent1.getId(), savedActiveStudent2.getId());
                     
                     assertThat(students)
-                            .filteredOn(student -> StatusEnum.INACTIVE.getDesc().equals(student.getStatus()))
+                            .filteredOn(student -> StatusEnum.INACTIVE.getValue().equals(student.getStatus()))
                             .hasSize(1)
                             .extracting(StudentEntity::getId)
                             .contains(savedInactiveStudent.getId());
@@ -86,10 +87,10 @@ class StudentRepositoryTest {
     void findByStatusOrderByIdDesc_ShouldReturnFilteredEntities() {
 
         // Act & Assert
-        StepVerifier.create(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc()))
-                .expectNextMatches(student -> StatusEnum.ACTIVE.getDesc().equals(student.getStatus()))
-                .expectNextMatches(student -> StatusEnum.ACTIVE.getDesc().equals(student.getStatus()))
-                .thenConsumeWhile(student -> StatusEnum.ACTIVE.getDesc().equals(student.getStatus()))
+        StepVerifier.create(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getValue()))
+                .expectNextMatches(student -> StatusEnum.ACTIVE.getValue().equals(student.getStatus()))
+                .expectNextMatches(student -> StatusEnum.ACTIVE.getValue().equals(student.getStatus()))
+                .thenConsumeWhile(student -> StatusEnum.ACTIVE.getValue().equals(student.getStatus()))
                 .verifyComplete();
     }
 

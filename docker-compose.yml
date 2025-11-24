@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    restart: unless-stopped
+
   app:
     build:
       context: .
@@ -8,6 +17,27 @@ services:
     container_name: scotiabank-challengue
     ports:
       - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - SPRING_PROFILES_ACTIVE=development
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRINGDOC_SWAGGER-UI_ENABLED=true
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    ports:
+      - "8081:8080"
+    depends_on:
+      - app
+    environment:
+      - SWAGGER_JSON_URL=http://app:8080/v3/api-docs
+      - BASE_URL=/swagger-ui
     networks:
       - app-network
     restart: unless-stopped

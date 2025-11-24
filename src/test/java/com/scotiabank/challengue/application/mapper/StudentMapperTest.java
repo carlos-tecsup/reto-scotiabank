@@ -3,7 +3,7 @@ package com.scotiabank.challengue.application.mapper;
 import com.scotiabank.challengue.application.dto.BaseStudentDTO;
 import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
 import com.scotiabank.challengue.domain.model.StudentModel;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.entity.StudentEntity;
 import com.scotiabank.challengue.util.StudentTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

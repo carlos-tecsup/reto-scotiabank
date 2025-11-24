@@ -1,6 +1,8 @@
 package com.scotiabank.challengue.infraestructure.config;
 
 import com.scotiabank.challengue.infraestructure.adapters.input.rest.StudentHandler;
+import com.scotiabank.challengue.infraestructure.adapters.input.rest.StudentRedisHandler;
+import com.scotiabank.challengue.infraestructure.config.swagger.RedisStudentApiDoc;
 import com.scotiabank.challengue.infraestructure.config.swagger.StudentApiDoc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +28,16 @@ public class RouterConfig {
     public RouterFunction<ServerResponse> studentRoutes(StudentHandler handler) {
         return RouterFunctions.route()
                 .nest(path(PATH_BASE), builder -> builder
+                        .POST("/create", accept(MediaType.APPLICATION_JSON), handler::registerStudent)
+                        .GET("/search", accept(MediaType.APPLICATION_JSON), handler::searchStudents))
+                .build();
+    }
+
+    @Bean
+    @RedisStudentApiDoc.RedisStudentRouterDoc
+    public RouterFunction<ServerResponse> redisStudentRoutes(StudentRedisHandler handler) {
+        return RouterFunctions.route()
+                .nest(path("/api/redis/students"), builder -> builder
                         .POST("/create", accept(MediaType.APPLICATION_JSON), handler::registerStudent)
                         .GET("/search", accept(MediaType.APPLICATION_JSON), handler::searchStudents))
                 .build();

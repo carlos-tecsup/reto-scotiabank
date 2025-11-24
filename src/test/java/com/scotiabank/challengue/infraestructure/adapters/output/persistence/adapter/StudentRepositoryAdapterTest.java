@@ -3,9 +3,10 @@ package com.scotiabank.challengue.infraestructure.adapters.output.persistence.ad
 import com.scotiabank.challengue.application.enums.StatusEnum;
 import com.scotiabank.challengue.application.mapper.StudentMapper;
 import com.scotiabank.challengue.domain.model.StudentModel;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.adapter.StudentRepositoryAdapter;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.entity.StudentEntity;
 import com.scotiabank.challengue.util.StudentTestData;
-import com.scotiabank.challengue.infraestructure.adapters.output.persistence.repository.StudentRepository;
+import com.scotiabank.challengue.infraestructure.adapters.output.persistence.h2.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -91,30 +92,30 @@ class StudentRepositoryAdapterTest {
     @Test
     void searchStudents_ShouldReturnFilteredStudents_WhenStatusIsProvided() {
         // Arrange
-        when(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc())).thenReturn(Flux.just(activeStudentEntity));
+        when(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getValue())).thenReturn(Flux.just(activeStudentEntity));
         when(studentMapper.toDomain(activeStudentEntity)).thenReturn(activeStudentModel);
 
         // Act & Assert
-        StepVerifier.create(studentRepositoryAdapter.searchStudents(StatusEnum.ACTIVE.getDesc()))
+        StepVerifier.create(studentRepositoryAdapter.searchStudents(StatusEnum.ACTIVE.getValue()))
                 .assertNext(result -> {
                     assertThat(result).isNotNull();
-                    assertThat(result.status()).isEqualTo(StatusEnum.ACTIVE.getDesc());
+                    assertThat(result.status()).isEqualTo(StatusEnum.ACTIVE.getValue());
                 })
                 .verifyComplete();
 
-        verify(studentRepository).findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc());
+        verify(studentRepository).findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getValue());
     }
 
     @Test
     void searchStudents_ShouldReturnEmptyFlux_WhenNoStudentsFound() {
         // Arrange
-        when(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc())).thenReturn(Flux.empty());
+        when(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getValue())).thenReturn(Flux.empty());
 
         // Act & Assert
-        StepVerifier.create(studentRepositoryAdapter.searchStudents(StatusEnum.ACTIVE.getDesc()))
+        StepVerifier.create(studentRepositoryAdapter.searchStudents(StatusEnum.ACTIVE.getValue()))
                 .verifyComplete();
 
-        verify(studentRepository).findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc());
+        verify(studentRepository).findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getValue());
     }
 
     @Test
