@@ -21,13 +21,13 @@ public class BaseStudentDTO {
     private Long id;
 
     @NotBlank(message = "Nombre no puede estar en blanco o nulo")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Nombre debe contener solo letras")
+    @Pattern(regexp = "^$|^[a-zA-Z]+$", message = "Nombre debe contener solo letras")
     @Schema(description = "Nombre del estudiante (solo letras)", example = "Juan", required = true)
     private String name;
 
     @NotBlank(message = "Apellido no puede estar en blanco o nulo")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Apellido debe contener solo letras")
-    @Schema(description = "Apellido del estudiante (solo letras)", example = "Perez", required = true)
+    @Pattern(regexp = "^$|^[a-zA-Z]+$", message = "Apellido debe contener solo letras")
+     @Schema(description = "Apellido del estudiante (solo letras)", example = "Perez", required = true)
     private String lastName;
 
     @Schema(description = "Estado del estudiante (activo/inactivo)", example = "activo")

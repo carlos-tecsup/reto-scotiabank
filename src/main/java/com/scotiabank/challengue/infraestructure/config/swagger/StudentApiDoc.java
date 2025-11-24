@@ -30,7 +30,7 @@ public class StudentApiDoc {
                     operation = @Operation(
                             operationId = "registerStudent",
                             summary = "Registrar nuevo estudiante",
-                            description = "Crea un nuevo estudiante en el sistema. Ejemplo: {\"id\": 16, \"name\": \"Andrea\", \"lastName\": \"Silva\", \"age\": 27, \"isActive\": true}",
+                            description = "Crea un nuevo estudiante en el sistema",
                             tags = {"Students"},
                             requestBody = @RequestBody(
                                     description = "Datos del estudiante a crear",
@@ -38,7 +38,7 @@ public class StudentApiDoc {
                                     content = @Content(
                                             schema = @Schema(
                                                     implementation = com.scotiabank.challengue.application.dto.CreateStudentRequestDTO.class,
-                                                    example = "{\"id\": 16, \"name\": \"Andrea\", \"lastName\": \"Silva\", \"age\": 27, \"isActive\": true}"
+                                                    example = "{\"id\": 45, \"name\": \"Andrea\", \"lastName\": \"Silva\", \"age\": 27, \"isActive\": true}"
                                             )
                                     )
                             ),
