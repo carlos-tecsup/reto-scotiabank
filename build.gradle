@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.11'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'com.scotiabank'
@@ -49,6 +50,74 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+	
+	// Configuración para evitar problemas de bloqueo de archivos en Windows
+	outputs.upToDateWhen { false }
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.11"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+		csv.required = false
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					'**/ChallengueApplication.class',
+					'**/config/**',
+					'**/dto/**',
+					'**/enums/**',
+					'**/constants/**',
+					'**/exception/**',
+					'**/util/**'
+			])
+		}))
+	}
+
+}
+
+jacocoTestCoverageVerification {
+	dependsOn jacocoTestReport
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.80
+			}
+		}
+	}
+}
+
+tasks.register('openJacocoReport') {
+	dependsOn jacocoTestReport
+	doLast {
+		def reportFile = file("$buildDir/reports/jacoco/test/html/index.html")
+		if (reportFile.exists()) {
+			exec {
+				commandLine 'cmd', '/c', 'start', reportFile.absolutePath
+			}
+		} else {
+			println "No se encontró el reporte de JaCoCo: ${reportFile.absolutePath}"
+		}
+	}
+}
+
+tasks.named('test') {
+	finalizedBy 'openJacocoReport'
+}
+
+check {
+	dependsOn jacocoTestCoverageVerification
 }
 
 compileJava {

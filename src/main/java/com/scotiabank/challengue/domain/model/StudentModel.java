@@ -12,15 +12,6 @@ public record StudentModel(
         return new Builder();
     }
 
-    public Builder toBuilder() {
-        return new Builder()
-                .id(this.id)
-                .name(this.name)
-                .lastName(this.lastName)
-                .status(this.status)
-                .age(this.age);
-    }
-
     public static final class Builder {
         private Long id;
         private String name;

@@ -72,7 +72,7 @@ public class StudentApiDoc {
             ),
             @RouterOperation(
                     path = "/api/students/search",
-                    method = RequestMethod.POST,
+                    method = RequestMethod.GET,
                     beanClass = com.scotiabank.challengue.infraestructure.adapters.input.rest.StudentHandler.class,
                     beanMethod = "searchStudents",
                     operation = @Operation(

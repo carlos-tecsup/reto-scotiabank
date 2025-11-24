@@ -27,7 +27,7 @@ public class RouterConfig {
         return RouterFunctions.route()
                 .nest(path(PATH_BASE), builder -> builder
                         .POST("/create", accept(MediaType.APPLICATION_JSON), handler::registerStudent)
-                        .POST("/search", accept(MediaType.APPLICATION_JSON), handler::searchStudents))
+                        .GET("/search", accept(MediaType.APPLICATION_JSON), handler::searchStudents))
                 .build();
     }
 
