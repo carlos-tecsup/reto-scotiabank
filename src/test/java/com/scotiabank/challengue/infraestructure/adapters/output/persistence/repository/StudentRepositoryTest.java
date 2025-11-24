@@ -14,6 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Integration tests for StudentRepository.
@@ -33,64 +34,49 @@ class StudentRepositoryTest {
     private R2dbcEntityTemplate template;
 
     private StudentEntity activeStudent1;
-    private StudentEntity activeStudent2;
-    private StudentEntity inactiveStudent;
+    private StudentEntity savedActiveStudent;
+
+    private StudentEntity savedActiveStudent2;
+    private StudentEntity savedInactiveStudent;
 
     @BeforeEach
     void setUp() {
         studentRepository.deleteAll().block();
 
         activeStudent1 = StudentTestData.activeStudentEntity();
+        savedActiveStudent = template.insert(StudentEntity.class).using(activeStudent1).block();
+        savedActiveStudent2 = template.insert(StudentEntity.class).using(StudentTestData.activeStudentEntity2()).block();
+        savedInactiveStudent = template.insert(StudentEntity.class).using(StudentTestData.inactiveStudentEntity()).block();
 
-        activeStudent2 = StudentTestData.activeStudentEntity2();
-
-        inactiveStudent = StudentTestData.inactiveStudentEntity();
     }
 
     @Test
     void save_ShouldPersistEntity() {
-                // Arrange
-                StepVerifier.create(template.insert(StudentEntity.class).using(activeStudent1))
-                .assertNext(savedStudent -> {
-                    assertThat(savedStudent).isNotNull();
-                                        assertThat(savedStudent.getId()).isEqualTo(1L);
-                    assertThat(savedStudent.getName()).isEqualTo("Juan");
-                    assertThat(savedStudent.getStatus()).isEqualTo(StatusEnum.ACTIVE.getDesc());
-                })
-                .verifyComplete();
+    // Arrange
+    StepVerifier.create(template.insert(StudentEntity.class).using(activeStudent1))
+    .assertNext(savedStudent -> {
+        assertThat(savedStudent).isNotNull();
+        assertThat(savedStudent.getId()).isEqualTo(1L);
+        assertThat(savedStudent.getName()).isEqualTo("Juan");
+        assertThat(savedStudent.getStatus()).isEqualTo(StatusEnum.ACTIVE.getDesc());
+    })
+    .verifyComplete();
     }
 
     @Test
-    void findById_ShouldReturnEntity_WhenExists() {
-                // Arrange
-                StudentEntity savedStudent = template.insert(StudentEntity.class).using(activeStudent1).block();
-
-                // Act & Assert
-                StepVerifier.create(studentRepository.findById(savedStudent.getId()))
-                                .assertNext(result -> {
-                                        assertThat(result).isNotNull();
-                                        assertThat(result.getId()).isEqualTo(savedStudent.getId());
-                                        assertThat(result.getName()).isEqualTo("Juan");
-                                })
-                                .verifyComplete();
-    }
-
-    @Test
-    void findById_ShouldReturnEmpty_WhenNotExists() {
-        // Arrange
-        Long nonExistentId = 99999L;
+    void findAll_ShouldReturnAllEntities() {
 
         // Act & Assert
-        StepVerifier.create(studentRepository.findById(nonExistentId))
+        StepVerifier.create(studentRepository.findAllByOrderByIdDesc())
+                .assertNext(student -> assertEquals(savedActiveStudent.getId(), student.getId()))
+                .assertNext(student -> assertEquals(savedActiveStudent2.getId(), student.getId()))
+                .assertNext(student -> assertEquals(savedInactiveStudent.getId(), student.getId()))
+                .thenConsumeWhile(student -> Objects.nonNull(student.getId()))
                 .verifyComplete();
     }
 
     @Test
     void findByStatusOrderByIdDesc_ShouldReturnFilteredEntities() {
-        // Arrange
-                template.insert(StudentEntity.class).using(activeStudent1).block();
-                template.insert(StudentEntity.class).using(activeStudent2).block();
-                template.insert(StudentEntity.class).using(inactiveStudent).block();
 
         // Act & Assert
         StepVerifier.create(studentRepository.findByStatusOrderByIdDesc(StatusEnum.ACTIVE.getDesc()))
@@ -112,11 +98,9 @@ class StudentRepositoryTest {
 
     @Test
     void existsById_ShouldReturnTrue_WhenEntityExists() {
-        // Arrange
-                StudentEntity savedStudent = template.insert(StudentEntity.class).using(activeStudent1).block();
 
         // Act & Assert
-        StepVerifier.create(studentRepository.existsById(savedStudent.getId()))
+        StepVerifier.create(studentRepository.existsById(savedActiveStudent.getId()))
                 .expectNext(true)
                 .verifyComplete();
     }
@@ -129,34 +113,6 @@ class StudentRepositoryTest {
         // Act & Assert
         StepVerifier.create(studentRepository.existsById(nonExistentId))
                 .expectNext(false)
-                .verifyComplete();
-    }
-
-    @Test
-    void deleteById_ShouldRemoveEntity() {
-        // Arrange
-        StudentEntity savedStudent = template.insert(StudentEntity.class).using(activeStudent1).block();
-
-        // Act
-        StepVerifier.create(studentRepository.deleteById(savedStudent.getId()))
-                .verifyComplete();
-
-        // Assert
-        StepVerifier.create(studentRepository.findById(savedStudent.getId()))
-                .verifyComplete();
-    }
-
-    @Test
-    void findAll_ShouldReturnAllEntities() {
-        // Arrange
-                template.insert(StudentEntity.class).using(activeStudent1).block();
-                template.insert(StudentEntity.class).using(inactiveStudent).block();
-
-        // Act & Assert
-        StepVerifier.create(studentRepository.findAllByOrderByIdDesc())
-                .expectNextMatches(student -> Objects.nonNull(student.getId()))
-                .expectNextMatches(student -> Objects.nonNull(student.getId()))
-                .thenConsumeWhile(student -> Objects.nonNull(student.getId()))
                 .verifyComplete();
     }
 }

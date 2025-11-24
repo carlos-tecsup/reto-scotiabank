@@ -20,10 +20,10 @@ import static com.scotiabank.challengue.application.constants.Constants.STUDENT_
 
 @Service
 @Slf4j
-public class StudentServiceImpl implements StudentUseCase {
+public class StudentService implements StudentUseCase {
     private final StudentRepositoryPort studentRepositoryPort;
     private final StudentMapper studentMapper;
-    public StudentServiceImpl(StudentRepositoryPort studentRepositoryPort, StudentMapper studentMapper) {
+    public StudentService(StudentRepositoryPort studentRepositoryPort, StudentMapper studentMapper) {
         this.studentRepositoryPort = studentRepositoryPort;
         this.studentMapper = studentMapper;
     }
@@ -39,7 +39,7 @@ public class StudentServiceImpl implements StudentUseCase {
                                     ? Mono.error(new DuplicatedStudentException(String.format(STUDENT_FOUND_MESSAGE, createStudentRequestDTO.getId())))
                                     : studentRepositoryPort.save(studentModel));
                 })
-                .doOnSuccess(v -> log.info("StudentServiceImpl registered successfully with ID: {}", createStudentRequestDTO.getId()))
+                .doOnSuccess(v -> log.info("StudentService registered successfully with ID: {}", createStudentRequestDTO.getId()))
                 .doOnError(e -> log.error("Error in registerStudent for ID: {}", createStudentRequestDTO.getId(), e))
                 .then();
     }

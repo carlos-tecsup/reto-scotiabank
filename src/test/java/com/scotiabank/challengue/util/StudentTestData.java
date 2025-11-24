@@ -2,6 +2,7 @@ package com.scotiabank.challengue.util;
 
 import com.scotiabank.challengue.application.dto.BaseStudentDTO;
 import com.scotiabank.challengue.application.dto.CreateStudentRequestDTO;
+import com.scotiabank.challengue.application.dto.SearchStudentsRequestDTO;
 import com.scotiabank.challengue.application.enums.StatusEnum;
 import com.scotiabank.challengue.domain.model.StudentModel;
 import com.scotiabank.challengue.infraestructure.adapters.output.persistence.entity.StudentEntity;
@@ -40,6 +41,7 @@ public final class StudentTestData {
                 .age(25)
                 .build();
     }
+
     public static StudentEntity activeStudentEntity2() {
         return StudentEntity.builder()
                 .id(2L)
@@ -90,6 +92,17 @@ public final class StudentTestData {
                 .build();
     }
 
+    public static SearchStudentsRequestDTO activeSearchRequestDTO() {
+        return SearchStudentsRequestDTO.builder()
+                .isActive(true)
+                .build();
+    }
+
+  public static SearchStudentsRequestDTO allSearchRequestDTO() {
+    return SearchStudentsRequestDTO.builder()
+            .isActive(null)
+            .build();
+}
     public static BaseStudentDTO activeBaseStudentDTO() {
         return BaseStudentDTO.builder()
                 .id(1L)

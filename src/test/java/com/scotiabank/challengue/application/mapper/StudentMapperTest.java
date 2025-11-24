@@ -11,13 +11,10 @@ import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Unit tests for StudentMapper.
- */
+
 class StudentMapperTest {
 
     private StudentMapper mapper;
-
     private StudentModel activeStudentModel;
     private CreateStudentRequestDTO activeRequestDTO;
     private CreateStudentRequestDTO inactiveRequestDTO;
