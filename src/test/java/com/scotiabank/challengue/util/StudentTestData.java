@@ -52,9 +52,18 @@ public final class StudentTestData {
                 .build();
     }
 
-    public static StudentEntity inactiveStudentEntity() {
+    public static StudentEntity activeStudentEntity3() {
         return StudentEntity.builder()
                 .id(3L)
+                .name("Carlos")
+                .lastName("Garcia")
+                .status(StatusEnum.ACTIVE.getDesc())
+                .age(28)
+                .build();
+    }
+    public static StudentEntity inactiveStudentEntity() {
+        return StudentEntity.builder()
+                .id(4L)
                 .name("Maria")
                 .lastName("Lopez")
                 .status(StatusEnum.INACTIVE.getDesc())
@@ -98,6 +107,11 @@ public final class StudentTestData {
                 .build();
     }
 
+    public static SearchStudentsRequestDTO inactiveSearchRequestDTO() {
+        return SearchStudentsRequestDTO.builder()
+                .isActive(false)
+                .build();
+    }
   public static SearchStudentsRequestDTO allSearchRequestDTO() {
     return SearchStudentsRequestDTO.builder()
             .isActive(null)

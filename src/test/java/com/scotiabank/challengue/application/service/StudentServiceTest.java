@@ -12,10 +12,11 @@ import com.scotiabank.challengue.util.StudentTestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mapstruct.factory.Mappers;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -30,14 +31,15 @@ class StudentServiceTest {
     @Mock
     private StudentRepositoryPort studentRepositoryPort;
 
+    @Spy
+    private StudentMapper studentMapper = Mappers.getMapper(StudentMapper.class);
+
     @InjectMocks
     private StudentService studentService;
 
-
-    private final StudentMapper studentMapper = Mappers.getMapper(StudentMapper.class);
-
     private CreateStudentRequestDTO createRequest;
     private SearchStudentsRequestDTO activeSearchRequestDTO;
+    private SearchStudentsRequestDTO inactiveSearchRequestDTO;
     private SearchStudentsRequestDTO searchAllStudentsRequestDTO;
 
     private StudentModel activeStudentDomain;
@@ -48,18 +50,15 @@ class StudentServiceTest {
     @BeforeEach
     void setUp() {
         createRequest = StudentTestData.activeCreateRequestDTO();
-
         activeSearchRequestDTO = StudentTestData.activeSearchRequestDTO();
+        inactiveSearchRequestDTO = StudentTestData.inactiveSearchRequestDTO();
+        searchAllStudentsRequestDTO = StudentTestData.allSearchRequestDTO();
 
         activeStudentDomain = StudentTestData.activeStudentModel();
-
         inactiveStudentDomain = StudentTestData.inactiveStudentModel();
 
         activeStudentDto = StudentTestData.activeBaseStudentDTO();
-
         inactiveStudentDto = StudentTestData.inactiveBaseStudentDTO();
-
-        searchAllStudentsRequestDTO = StudentTestData.allSearchRequestDTO();
     }
 
 
@@ -145,7 +144,7 @@ class StudentServiceTest {
         when(studentMapper.toBaseStudentDTO(inactiveStudentDomain)).thenReturn(inactiveStudentDto);
 
         // Assert
-        StepVerifier.create(studentService.searchStudents(activeSearchRequestDTO))
+        StepVerifier.create(studentService.searchStudents(inactiveSearchRequestDTO))
                 .assertNext(result -> {
                     assertThat(result).isNotNull();
                     assertThat(result.getStudents()).hasSize(1);
